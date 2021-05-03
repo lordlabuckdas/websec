@@ -1,0 +1,26 @@
+name: reveal-md site build
+
+on: push
+
+jobs:
+  generate_site:
+    runs-on: ubuntu-18.04
+    steps:
+        - name: checkout repo
+          uses: actions/checkout@v2
+
+        - name: create site dir
+          run: mkdir -p _site && rm -rf _site/*
+
+        - name: generate site files using dockerized reveal-md
+          uses: docker://webpronl/reveal-md:latest
+          with:
+              args: --static _site/ README.md
+
+        - name: push site files
+          run: |
+              git config --global user.name "github-actions[bot]"
+              git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+              git add -A
+              git commit -m "updated site files"
+              git push
